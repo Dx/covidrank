@@ -19,12 +19,9 @@ class _ComparisonState extends State<Comparison> {
     var confirmedData = new List<double>();
     var deathData = new List<double>();
     var recoveredData = new List<double>();
-    var daysInfected = 0;
 
     double confirmedCasesDayBefore = 0;
     var confirmedNewCases = new List<double>();
-
-    var confirmedFactor = new List<double>();
 
     double deathCasesDayBefore = 0;
     var deathNewCases = new List<double>();
@@ -32,24 +29,14 @@ class _ComparisonState extends State<Comparison> {
     double recoveredCasesDayBefore = 0;
     var recoveredNewCases = new List<double>();
 
-    double sumFactor = 0;
-
     args.numbers.forEach((day) {
-      if (day.confirmed >= 1) {
+      if (day.confirmed >= 0) {
         confirmedData.add(day.confirmed.toDouble());
+
         deathData.add(day.deaths.toDouble());
         recoveredData.add(day.recovered.toDouble());
 
         confirmedNewCases.add(day.confirmed.toDouble() - confirmedCasesDayBefore);
-        if (confirmedCasesDayBefore > 0) {
-
-          confirmedFactor.add(day.confirmed.toDouble() / confirmedCasesDayBefore);
-          sumFactor = sumFactor + (day.confirmed.toDouble() / confirmedCasesDayBefore);
-          print('confirmedCasesDayBefore: ' + confirmedCasesDayBefore.toString());
-          print('confirmedCasesThisDay: ' + day.confirmed.toDouble().toString());
-          print('sumFactor: ' + sumFactor.toString());
-        }
-
         confirmedCasesDayBefore = day.confirmed.toDouble();
 
         deathNewCases.add(day.deaths.toDouble() - deathCasesDayBefore);
@@ -58,12 +45,8 @@ class _ComparisonState extends State<Comparison> {
         recoveredNewCases.add(day.recovered.toDouble() - recoveredCasesDayBefore);
         recoveredCasesDayBefore = day.recovered.toDouble();
 
-        daysInfected = daysInfected + 1;
       }
     });
-
-//    double infectionFactor = confirmedFactor.last;
-    double infectionFactor = sumFactor / confirmedFactor.length;
 
     const List<StaggeredTile> _tiles = const <StaggeredTile>[
       const StaggeredTile.count(2, 0.30),
@@ -76,7 +59,7 @@ class _ComparisonState extends State<Comparison> {
       const StaggeredTile.count(1, 0.8),
       const StaggeredTile.count(1, 0.8),
       const StaggeredTile.count(2, 1),
-      const StaggeredTile.count(2, 0.8),
+      const StaggeredTile.count(2, 1.3),
     ];
 
     Widget confirmedChart = new Sparkline(
@@ -129,11 +112,11 @@ class _ComparisonState extends State<Comparison> {
 
     List<Widget> _children = <Widget>[
       const HomeHeaderTile('Infection behavior', Colors.indigo),
-      HomeTile('Confirmed accum', confirmedChart, Colors.indigo),
+      HomeTile('Total Confirmed', confirmedChart, Colors.indigo),
       HomeTile('Confirmed new cases', confirmedNewChart, Colors.indigo),
-      HomeTile('Death accum', deathChart, Colors.red),
+      HomeTile('Total Death', deathChart, Colors.red),
       HomeTile('Death new cases', deathNewChart, Colors.red),
-      HomeTile('Recovered accum', recoveredChart, Colors.blue),
+      HomeTile('Total Recovered', recoveredChart, Colors.blue),
       HomeTile('Recovered new cases', recoveredNewChart, Colors.blue),
       HomeTile('Days with infection',
         Text(args.totalDaysInfected.toString(),
@@ -145,7 +128,7 @@ class _ComparisonState extends State<Comparison> {
         ),
         Colors.deepOrangeAccent),
       HomeTile('Infection factor',
-        Text(infectionFactor.toStringAsFixed(2),
+        Text(args.infectionFactor.toStringAsFixed(2),
           style: TextStyle(
             fontSize: 50,
             fontWeight: FontWeight.bold,
@@ -164,7 +147,7 @@ class _ComparisonState extends State<Comparison> {
         Colors.green
       ),
       HomeDescription(
-        'The Infection factor considered on the ranking, is based on the new confirmed cases day after day. \n The ideal is 1, bigger than 1 is more dangerous. \n\nContact dequis@gmail.com',
+        'The Infection factor considered on the ranking, is based on the new confirmed cases day after day. \n The ideal is 1, bigger than 1 is more dangerous. \n\nContact dequis@gmail.com \n\n Last update: ' + args.lastUpdate,
         Colors.lightGreen
       ),
     ];

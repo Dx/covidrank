@@ -10,7 +10,7 @@ class ListCountryData {
     List<CountryData> countryDatas = new List<CountryData>();
     countryDatas = parsedJson.map((i)=>CountryData.fromJson(i)).toList();
 
-    countryDatas.sort((a, b) => b.score.compareTo(a.score));
+    countryDatas.sort((a, b) => a.infectionFactor.compareTo(b.infectionFactor));
     int counter = 1;
     countryDatas.forEach((element){
       element.rank = counter;

@@ -60,32 +60,52 @@ class _CountriesState extends State<Countries> {
               controller: controller,
             ),
             Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  FocusScope.of(context).requestFocus(new FocusNode());
-                },
-                child: FutureBuilder<ListCountryData>(
-                  future: getData(),
-                  builder: (context, snapshot) {
+              child: FutureBuilder<ListCountryData>(
+                future: getData(),
+                builder: (context, snapshot) {
 
-                    if (snapshot.hasData) {
-                      List<CountryData> data = snapshot.data.countryDatas;
-                      if (filter != null || filter != '') {
-                        data = data.where((e) => e.countryName.toLowerCase().startsWith(filter.toLowerCase())).toList();
-                      }
+                  if (snapshot.hasData) {
+                    List<CountryData> data = snapshot.data.countryDatas;
+                    if (filter != null || filter != '') {
+                      data = data.where((e) => e.countryName.toLowerCase().startsWith(filter.toLowerCase())).toList();
+                    }
 
-                      return ListView.builder(
-                        itemCount: data.length,
-                        itemBuilder: (context, index) {
-                          CountryData countryData = data[index];
-                          return Column(
+                    return ListView.builder(
+                      itemCount: data.length,
+                      itemBuilder: (context, index) {
+                        CountryData countryData = data[index];
+                        String countryName = '';
+
+                        countryName = countryData.countryName;
+                        //print(countryName);
+                        if (countryName.length > 22) {
+                          countryName = countryName.substring(0, 22);
+                          print(countryName);
+                        }
+
+                        return GestureDetector(
+                          onTap: () {
+                            print('tapped');
+                            Navigator.push(
+                                context,
+                                new MaterialPageRoute<String>(
+                                  builder: (
+                                      BuildContext context) => new Comparison(),
+                                  fullscreenDialog: true,
+                                  settings: RouteSettings(
+                                    arguments: countryData,
+                                  ),
+                                )
+                            );
+                          },
+                          child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              SizedBox(height: 10),
+                              SizedBox(height: 12),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
-                                  SizedBox(width: 30),
+                                  SizedBox(width: 15),
                                   Text(countryData.rank.toString(),
                                     style: TextStyle(
                                       fontSize: 20,
@@ -94,13 +114,13 @@ class _CountriesState extends State<Countries> {
                                     ),
                                   ),
                                   SizedBox(width: 20),
-                                  Text(countryData.countryName,
+                                  Text(countryName,
                                     style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold
                                     ),
                                   ),
-                                  SizedBox(width: 20),
+                                  SizedBox(width: 15),
                                   IconButton(
                                     icon: Icon(Icons.insert_chart),
                                     color: Colors.blue,
@@ -146,19 +166,19 @@ class _CountriesState extends State<Countries> {
                                 color: Colors.blue[200],
                               ),
                             ],
-                          );
-                        }
-                      );
+                          ),
+                        );
+                      }
+                    );
 
-                    } else if (snapshot.hasError) {
-                      return Text("${snapshot.error}");
-                    }
+                  } else if (snapshot.hasError) {
+                    return Text("${snapshot.error}");
+                  }
 
-                    // Por defecto, muestra un loading spinner
-                    return Center(child: CircularProgressIndicator());
+                  // Por defecto, muestra un loading spinner
+                  return Center(child: CircularProgressIndicator());
 
-                  },
-                ),
+                },
               ),
             ),
           ],
